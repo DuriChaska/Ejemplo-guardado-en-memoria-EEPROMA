@@ -1,0 +1,85 @@
+#include <EEPROM.h>
+
+
+
+const int eepromAddress = 0;  // Dirección de EEPROM para guardar el bit (puedes cambiarla si es necesario)
+
+
+
+// Pines para botón y LED
+
+const int buttonPin = 2;
+
+const int ledPin = 13;
+
+
+
+void setup() {
+
+  pinMode(buttonPin, INPUT_PULLUP);  // Configura el botón como entrada
+
+  pinMode(ledPin, OUTPUT);           // Configura el LED como salida
+
+  Serial.begin(9600);
+
+
+
+  // Recuperar el bit almacenado en EEPROM y mostrarlo
+
+  int storedBit = EEPROM.read(eepromAddress);
+
+  if (storedBit == 1) {
+
+    digitalWrite(ledPin, HIGH);
+
+    Serial.println("Bit recuperado: 1");
+
+  } else {
+
+    digitalWrite(ledPin, LOW);
+
+    Serial.println("Bit recuperado: 0");
+
+  }
+
+}
+
+
+
+void loop() {
+
+  // Leer el estado del botón
+
+  if (digitalRead(buttonPin) == LOW) {
+
+    // Si se presiona el botón, alterna el bit en EEPROM
+
+    int currentBit = EEPROM.read(eepromAddress);
+
+    int newBit = currentBit == 0 ? 1 : 0;  // Cambia entre 0 y 1
+
+
+
+    // Guardar el nuevo bit en la EEPROM
+
+    EEPROM.write(eepromAddress, newBit);
+
+    Serial.print("Bit guardado: ");
+
+    Serial.println(newBit);
+
+
+
+    // Actualizar el LED según el valor del bit
+
+    digitalWrite(ledPin, newBit == 1 ? HIGH : LOW);
+
+
+
+    // Esperar un poco para evitar múltiples lecturas del botón
+
+    delay(500);
+
+  }
+
+}
